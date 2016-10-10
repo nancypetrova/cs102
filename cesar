@@ -1,0 +1,31 @@
+def encrypt_caesar(plaintext, shift):
+    ciphertext = ''
+    Low = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+           'w', 'x', 'y', 'z']
+    Upper = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
+             'V', 'W', 'X', 'Y', 'Z']
+    for symbol in plaintext:
+        if symbol.islower():
+            newIndex = (Low.index(symbol) + shift) % 26
+            ciphertext += Low[newIndex]
+        else:
+            newIndex = (Upper.index(symbol) + shift) % 26
+            ciphertext += Upper[newIndex]
+    print(ciphertext)
+    return ciphertext
+
+def decrypt_caesar(ciphertext, shift):
+    plaintext = ""
+    Low = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+           'w', 'x', 'y', 'z']
+    Upper = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
+             'V', 'W', 'X', 'Y', 'Z']
+    for symbol in ciphertext:
+        if symbol.islower():
+            newIndex = (Low.index(symbol) - shift) % 26
+            plaintext += Low[newIndex]
+        else:
+            newIndex = (Upper.index(symbol) - shift) % 26
+            plaintext += Upper[newIndex]
+    print(plaintext)
+    return plaintext
