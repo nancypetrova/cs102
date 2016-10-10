@@ -1,0 +1,34 @@
+def encrypt_vigenere(plaintext, keyword):
+    ciphertext = ''
+    Low = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+           'w', 'x', 'y', 'z']
+    Upper = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
+             'V', 'W', 'X', 'Y', 'Z']
+    for i in range(len(plaintext)):
+        keyIndex = i % len(keyword)
+        if plaintext[i].islower():
+            newIndex = (Low.index(plaintext[i]) + Low.index(keyword[keyIndex])) % 26
+            ciphertext += Low[newIndex]
+        else:
+            newIndex = (Upper.index(plaintext[i]) + Upper.index(keyword[keyIndex])) % 26
+            ciphertext += Upper[newIndex]
+    print(ciphertext)
+    return ciphertext
+
+
+def decrypt_vigenere(ciphertext, keyword):
+    plaintext = ''
+    Low = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+           'w', 'x', 'y', 'z']
+    Upper = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
+             'V', 'W', 'X', 'Y', 'Z']
+    for i in range(len(ciphertext)):
+        keyIndex = i % len(keyword)
+        if ciphertext[i].islower():
+            newIndex = (Low.index(ciphertext[i]) - Low.index(keyword[keyIndex])) % 26
+            plaintext += Low[newIndex]
+        else:
+            newIndex = (Upper.index(ciphertext[i]) - Upper.index(keyword[keyIndex])) % 26
+            plaintext += Upper[newIndex]
+    print(plaintext)
+    return plaintext
