@@ -1,0 +1,198 @@
+# Практическая работа
+
+#### Задание 1: Скачайте файл с данными о погибших на титанике
+import requests
+import os
+
+def to_str(lines):
+    newStr = []
+    for bytes in lines:
+        newStr.append(str(lines, 'utf-8') + '\n')
+    return newStr
+    # Функция возвращает список преобразованных строк,
+    # а принимает список байтовых строк
+
+    # Отдельно взятую строку байт можно преобразовать в строку
+    # символов следующим образом: str(line, 'utf-8')+'\n'
+    # Символ перехода на новую строку добавляется, чтобы при
+    # записи в файл каждая запись начиналась с новой строки
+
+
+def download_file(url):
+    # Делаем GET-запрос по указанному адресу
+    response = requests.get(url)
+    # Получаем итератор строк
+    text = response.iter_lines()
+    # Каждую строку конвертируем из массива байт в массив символов
+    text = to_str(text)
+
+    # Если файла не существует, то создаем его и записываем данные
+    if not os.path.isfile("titanic.csv"):
+        with open("titanic.csv", "w") as f:
+            f.writelines(text)
+    return text
+
+
+# data = download_file(
+#     "https://raw.githubusercontent.com/haven-jeon/introduction_to_most_usable_pkgs_in_project/master/bicdata/data/titanic.csv")
+
+# Если вы успешно выполнили первое задание, то файл можно не скачивать
+# каждый раз, а вместо этого данные читать из файла. Расскомментируйте
+# следующую строку и закомментируйте предыдущую
+data = open('titanic.csv')
+
+#### Задание 2: Получаем список словарей
+# Модуль для работы с файлами в формате CSV
+import csv
+
+reader = csv.DictReader(data)
+reader.fieldnames[0] = 'lineno'
+titanic_data = list(reader)
+
+# Модуль для красивого вывода на экран
+from pprint import pprint as pp
+
+pp(titanic_data[:2])
+pp(titanic_data[-2:])
+
+
+#### Задание 3: Узнать количество выживших и погибших на Титанике
+def survived(tit_data):
+    amountOfSurvived=0
+    amountOfDead=0
+
+    for dict in tit_data:
+        if dict['survived'] == '1':
+            amountOfSurvived += 1
+        else:
+            amountOfDead += 1
+    amountOfSurvivedAndDead = (amountOfSurvived, amountOfDead)
+    # Функция возвращает кортеж из двух элементов: количество
+    # выживших и число погибших
+    return amountOfSurvivedAndDead
+
+pp(survived(titanic_data))  # (500, 809)
+
+#### Задание 4: Узнать количество выживших и погибших на Титанике
+#### по отдельности для мужчин и женщин
+
+from operator import itemgetter
+from itertools import groupby
+
+
+def survived_by_sex(tit_data):
+    listOfSexAmountOfSurvivedandDead = []
+    listOfMales = []
+    listOfFemales = []
+    for dict in tit_data:
+        if dict['sex'] == 'male':
+            listOfMales.append(dict)
+        else:
+            listOfFemales.append(dict)
+    listOfSexAmountOfSurvivedandDead.append(('female', survived(listOfFemales)))
+    listOfSexAmountOfSurvivedandDead.append(('male', survived(listOfMales)))
+    # Функция возвращает список кортежей из двух элементов вида:
+    # (пол, (количество выживших, число погибших))
+
+    # Подумайте над использованием функции survived()
+
+
+    return listOfSexAmountOfSurvivedandDead
+
+pp(survived_by_sex(titanic_data))  # [('female', (339, 127)), ('male', (161, 682))]
+
+
+#### Задание 5: Узнать средний возраст пассажиров
+def average_age(tit_data):
+    count=0
+    sum=0
+    for dict in tit_data:
+        if dict['age'] != 'NA' :
+            sum += float(dict["age"])
+            count+=1
+    averageAge = sum / count
+    return averageAge
+
+
+pp(average_age(titanic_data))  # 29.88
+
+
+#### Задание 6: Узнать средний возраст мужчин и женщин по отдельности
+def average_age_by_sex(tit_data):
+    averageAge = []
+    listOfMales=[]
+    listOfFemales=[]
+    for dict in tit_data:
+        if dict['sex'] == 'male':
+            listOfMales.append(dict)
+        else:
+            listOfFemales.append(dict)
+    averageAge.append(('male', average_age(listOfMales)))
+    averageAge.append(('female', average_age(listOfFemales)))
+    return averageAge
+    # Функция возвращает список кортежей из двух элементов вида:
+    # (пол, средний возраст)
+
+    # Подумайте над использованием функции average_age()
+
+
+pp(average_age_by_sex(titanic_data))  # [('female', 28.68), ('male', 30.58)]
+
+
+#### Задание 7: Сколько детей и взрослых было на борту:
+#### Получить группы в следующих диапазонах возрастов:
+#### [0-14), [14-18), [18-inf]
+
+def amountOfChildrenAndAdults(tit_data):
+    child=0
+    teen=0
+    adult=0
+    for dict in tit_data:
+        currentAge=float(dict["age"])
+        if currentAge < 14:
+            child += 1
+        elif currentAge >= 14 and currentAge < 18:
+            teen += 1
+        else:
+            adult += 1
+        AmountOfCategory = [('child', child), ('teen', teen), ('adult', adult)]
+    return AmountOfCategory
+
+#### Задание 8: Сколько в каждой группе выживших
+
+def amountOFSurvived(tit_data):
+        listOfChildren = []
+        listOfAdults = []
+        listOfTeens = []
+        for dict in tit_data:
+            currentAge = float(dict["age"])
+            if currentAge < 14:
+                listOfChildren.append(dict)
+            elif currentAge >= 14 and currentAge < 18:
+                listOfTeens.append(dict)
+            else:
+                listOfAdults.append(dict)
+            listOfSurvivedAndDeadChildren = survived(listOfChildren)
+            listOfSurvivedAndDeadTeens = survived(listOfTeens)
+            listOfSurvivedAndDeadAdults = survived(listOfAdults)
+        survivedChildren = ['child', listOfSurvivedAndDeadChildren[0]]
+        survivedTeens = ['teens', listOfSurvivedAndDeadTeens[0]]
+        survivedAdults = ['adults', listOfSurvivedAndDeadAdults[0]]
+        return survivedChildren, survivedTeens, survivedAdults
+
+
+
+        #### Задание 9: Сколько в каждой группе выживших по отдельности для
+        #### мужчин и женщин
+def amountOfSurvivedAndDeadInEachGroup(tit_data):
+    listOfMales = []
+    listOfFemales = []
+    amountInEach = []
+    for dict in tit_data:
+        if dict['sex'] == 'male':
+            listOfMales.append(dict)
+        else:
+            listOfFemales.append(dict)
+    amountInEach.append(["males",amountOFSurvived(listOfMales)])
+    amountInEach.append(["females",amountOFSurvived(listOfFemales)])
+    return (amountInEach)
